@@ -5,7 +5,13 @@ function draw() {
   if(canvas.getContext) {
     const ctx = canvas.getContext('2d');
 
-    displayOneCubeSide(126, 70, '#FF0000');
+    displayOneCubeSide(99, 99, '#08EE10'); // front
+    displayOneCubeSide(99, 0, '#FFFFFF'); // top
+    displayOneCubeSide(0, 99, '#F58A1F'); // left
+    displayOneCubeSide(198, 99, '#FF0000'); // right
+    displayOneCubeSide(297, 99, '#1900FF'); // back
+    displayOneCubeSide(99, 198, '#DCE90D'); // bottom
+
 
     // x and y coordinates are top left corner of side of cube, stickers - colors array
     function displayOneCubeSide(x, y, stickers) {
@@ -33,8 +39,10 @@ function draw() {
 
         drawOneSticker(xp, yp, stickers);
       }
+
     }
 
+    // function for drawind one sticker of cube, takes x and y coordinates and color of sticker
     function drawOneSticker(x, y, color) {
 
       // gray background around sticker - as a border
@@ -65,8 +73,9 @@ function draw() {
       ctx.arcTo(x+1, y+1, x+7, y+1, 7);
       ctx.fill();
     }
+    
+  }
 
-  }  
 }
 
 
