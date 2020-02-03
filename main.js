@@ -5,6 +5,10 @@ function draw() {
   if(canvas.getContext) {
     const ctx = canvas.getContext('2d');
 
+    // grey rect behind stickers of one cube side
+    ctx.fillStyle = '#707070';
+    ctx.fillRect(100,100,47,47);
+    /*
 
     // gray background around sticker
     ctx.fillStyle = '#707070';
@@ -32,8 +36,12 @@ function draw() {
     ctx.arcTo(101,132,101,126,8);
     ctx.lineTo(101,107);
     ctx.arcTo(101,101,106,101,8);
-    ctx.fill();
+    ctx.fill(); */
   }  
+}
+
+function displayOneCubeSide() {
+
 }
 
 
