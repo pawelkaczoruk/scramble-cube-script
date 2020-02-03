@@ -4,4 +4,8 @@
   padding: 0;
   margin: 0;
 }
+
+#scrambled-cube {
+  border: 2px solid black;
+}
 /*# sourceMappingURL=style.css.map */
