@@ -1,40 +1,36 @@
-const colorsArr = ['#08EE10', '#08EE10', '#FFFFFF',
-                  '#F58A1F', '#F58A1F', '#FF0000',
-                  '#DCE90D', '#08EE10', '#1900FF'];
-const cubeScheme = {
-  front: [{1: '#08EE10'}, {2: '#08EE10'}, {3: '#08EE10'},
-          {4: '#08EE10'}, {5: '#08EE10'}, {6: '#08EE10'},
-          {7: '#08EE10'}, {8: '#08EE10'}, {9: '#08EE10'}],
-  top: [{1: '#FFFFFF'}, {2: '#FFFFFF'}, {3: '#FFFFFF'},
-        {4: '#FFFFFF'}, {5: '#FFFFFF'}, {6: '#FFFFFF'},
-        {7: '#FFFFFF'}, {8: '#FFFFFF'}, {9: '#FFFFFF'}],
-  left: [{1: '#F58A1F'}, {2: '#F58A1F'}, {3: '#F58A1F'},
-        {4: '#F58A1F'}, {5: '#F58A1F'}, {6: '#F58A1F'},
-        {7: '#F58A1F'}, {8: '#F58A1F'}, {9: '#F58A1F'}],
-  right: [{1: '#FF0000'}, {2: '#FF0000'}, {3: '#FF0000'},
-          {4: '#FF0000'}, {5: '#FF0000'}, {6: '#FF0000'},
-          {7: '#FF0000'}, {8: '#FF0000'}, {9: '#FF0000'}],
-  back: [{1: '#1900FF'}, {2: '#1900FF'}, {3: '#1900FF'},
-        {4: '#1900FF'}, {5: '#1900FF'}, {6: '#1900FF'},
-        {7: '#1900FF'}, {8: '#1900FF'}, {9: '#1900FF'}],
-  bottom: [{1: '#DCE90D'}, {2: '#DCE90D'}, {3: '#DCE90D'},
-          {4: '#DCE90D'}, {5: '#DCE90D'}, {6: '#DCE90D'},
-          {7: '#DCE90D'}, {8: '#DCE90D'}, {9: '#DCE90D'}],
-};
-
 function draw() {
-  const canvas = document.getElementById('scrambled-cube');
+  const canvas = document.getElementById('scrambled-cube'),
+        cubeScheme = {
+          front: [{1: '#08EE10'}, {2: '#08EE10'}, {3: '#08EE10'},
+                  {4: '#08EE10'}, {5: '#08EE10'}, {6: '#08EE10'},
+                  {7: '#08EE10'}, {8: '#08EE10'}, {9: '#08EE10'}],
+          top: [{1: '#FFFFFF'}, {2: '#FFFFFF'}, {3: '#FFFFFF'},
+                {4: '#FFFFFF'}, {5: '#FFFFFF'}, {6: '#FFFFFF'},
+                {7: '#FFFFFF'}, {8: '#FFFFFF'}, {9: '#FFFFFF'}],
+          left: [{1: '#F58A1F'}, {2: '#F58A1F'}, {3: '#F58A1F'},
+                {4: '#F58A1F'}, {5: '#F58A1F'}, {6: '#F58A1F'},
+                {7: '#F58A1F'}, {8: '#F58A1F'}, {9: '#F58A1F'}],
+          right: [{1: '#FF0000'}, {2: '#FF0000'}, {3: '#FF0000'},
+                  {4: '#FF0000'}, {5: '#FF0000'}, {6: '#FF0000'},
+                  {7: '#FF0000'}, {8: '#FF0000'}, {9: '#FF0000'}],
+          back: [{1: '#1900FF'}, {2: '#1900FF'}, {3: '#1900FF'},
+                {4: '#1900FF'}, {5: '#1900FF'}, {6: '#1900FF'},
+                {7: '#1900FF'}, {8: '#1900FF'}, {9: '#1900FF'}],
+          bottom: [{1: '#DCE90D'}, {2: '#DCE90D'}, {3: '#DCE90D'},
+                  {4: '#DCE90D'}, {5: '#DCE90D'}, {6: '#DCE90D'},
+                  {7: '#DCE90D'}, {8: '#DCE90D'}, {9: '#DCE90D'}],};
+
 
   // if browser supports canvas
   if(canvas.getContext) {
     const ctx = canvas.getContext('2d');
 
-    displayOneCubeSide(99, 99, colorsArr); // front
-    displayOneCubeSide(99, 0, '#FFFFFF'); // top
-    displayOneCubeSide(0, 99, '#F58A1F'); // left
-    displayOneCubeSide(198, 99, '#FF0000'); // right
-    displayOneCubeSide(297, 99, '#1900FF'); // back
-    displayOneCubeSide(99, 198, '#DCE90D'); // bottom
+    displayOneCubeSide(99, 99, cubeScheme.front); // front
+    displayOneCubeSide(99, 0, cubeScheme.top); // top
+    displayOneCubeSide(0, 99, cubeScheme.left); // left
+    displayOneCubeSide(198, 99, cubeScheme.right); // right
+    displayOneCubeSide(297, 99, cubeScheme.back); // back
+    displayOneCubeSide(99, 198, cubeScheme.bottom); // bottom
 
 
     // x and y coordinates are top left corner of side of cube,
@@ -50,7 +46,7 @@ function draw() {
       
       // calculate position of sticker and draw it
       for(let i=1; i<=9; i++) {
-        color = stickers[i-1];
+        color = stickers[i-1][i];
 
         switch(i) {
           case 1: xp = x; yp = y; break;
