@@ -1,25 +1,27 @@
 function draw() {
   const canvas = document.getElementById('scrambled-cube'),
         cubeScheme = {
-          front: [{1: '#08EE10'}, {2: '#08EE10'}, {3: '#08EE10'},
-                  {4: '#08EE10'}, {5: '#08EE10'}, {6: '#08EE10'},
-                  {7: '#08EE10'}, {8: '#08EE10'}, {9: '#08EE10'}],
-          top: [{1: '#FFFFFF'}, {2: '#FFFFFF'}, {3: '#FFFFFF'},
-                {4: '#FFFFFF'}, {5: '#FFFFFF'}, {6: '#FFFFFF'},
-                {7: '#FFFFFF'}, {8: '#FFFFFF'}, {9: '#FFFFFF'}],
-          left: [{1: '#F58A1F'}, {2: '#F58A1F'}, {3: '#F58A1F'},
-                {4: '#F58A1F'}, {5: '#F58A1F'}, {6: '#F58A1F'},
-                {7: '#F58A1F'}, {8: '#F58A1F'}, {9: '#F58A1F'}],
-          right: [{1: '#FF0000'}, {2: '#FF0000'}, {3: '#FF0000'},
-                  {4: '#FF0000'}, {5: '#FF0000'}, {6: '#FF0000'},
-                  {7: '#FF0000'}, {8: '#FF0000'}, {9: '#FF0000'}],
-          back: [{1: '#1900FF'}, {2: '#1900FF'}, {3: '#1900FF'},
-                {4: '#1900FF'}, {5: '#1900FF'}, {6: '#1900FF'},
-                {7: '#1900FF'}, {8: '#1900FF'}, {9: '#1900FF'}],
-          bottom: [{1: '#DCE90D'}, {2: '#DCE90D'}, {3: '#DCE90D'},
-                  {4: '#DCE90D'}, {5: '#DCE90D'}, {6: '#DCE90D'},
-                  {7: '#DCE90D'}, {8: '#DCE90D'}, {9: '#DCE90D'}],};
-
+          front: ['#FFFFFF', '#08EE10', '#08EE10',
+                  '#08EE10', '#08EE10', '#08EE10',
+                  '#08EE10', '#08EE10', '#08EE10'],
+          top: ['#FFFFFF', '#FFFFFF', '#FFFFFF',
+                '#FFFFFF', '#FFFFFF', '#FFFFFF',
+                '#FFFFFF', '#FFFFFF', '#FFFFFF'],
+          left: ['#F58A1F', '#F58A1F', '#F58A1F',
+                '#F58A1F', '#F58A1F', '#F58A1F',
+                '#F58A1F', '#F58A1F', '#F58A1F'],
+          right: ['#FF0000', '#FF0000', '#FF0000',
+                  '#FF0000', '#FF0000', '#FF0000',
+                  '#FF0000', '#FF0000', '#FF0000'],
+          back: ['#1900FF', '#1900FF', '#1900FF',
+                '#1900FF', '#1900FF', '#1900FF',
+                '#1900FF', '#1900FF', '#1900FF'],
+          bottom: ['#DCE90D', '#DCE90D', '#DCE90D',
+                  '#DCE90D', '#DCE90D', '#DCE90D',
+                  '#DCE90D', '#DCE90D', '#DCE90D']
+                };
+  const scramble = ["R2", "D", "B2", "D", "F2", "L2", "D'", "L2", "U", "R2", "B2", "F", "D", "L'", "B", "D2", "R", "F2", "U2"];
+  const scrambledCubeScheme = scrambleCube(scramble, cubeScheme);
 
   // if browser supports canvas
   if(canvas.getContext) {
@@ -46,7 +48,7 @@ function draw() {
       
       // calculate position of sticker and draw it
       for(let i=1; i<=9; i++) {
-        color = stickers[i-1][i];
+        color = stickers[i-1];
 
         switch(i) {
           case 1: xp = x; yp = y; break;
@@ -101,7 +103,49 @@ function draw() {
 
 }
 
+function scrambleCube(scramble, colorScheme) {
+  let scrambledCube = colorScheme;
 
+  for(let i=0; i<scramble.length; i++) {
+    const letterLength = scramble[i].length;
+    const move = scramble[i][0];
+    let modifier;
 
+    // for counter clockwise moves do 3x turn, for duble moves do 2x turn
+    modifier = letterLength === 1 ? 1 : scramble[i][1] === '2' ? 2 : 3;
+    
+    switch(scramble[i][0]) {
+      case 'F': scrambledCube.front = doFaceMove(scrambledCube.front, modifier);
 
+                break;
+      case 'U': scrambledCube.top = doFaceMove(scrambledCube.top, modifier);
+                break;
+      case 'L': scrambledCube.left = doFaceMove(scrambledCube.left, modifier);
+                break;
+      case 'R': scrambledCube.right = doFaceMove(scrambledCube.right, modifier);
+                break;
+      case 'B': scrambledCube.back = doFaceMove(scrambledCube.back, modifier);
+                break;
+      case 'D': scrambledCube.bottom = doFaceMove(scrambledCube.bottom, modifier);
+                break;
+    }
+  }
 
+  return scrambledCube;
+}
+
+function doFaceMove(cubeSide, turns) {
+  let newSide,
+      tempSide = cubeSide;
+
+  for(let i=0; i<turns; i++) {
+    newSide = [
+      tempSide[6], tempSide[3], tempSide[0],
+      tempSide[7], tempSide[4], tempSide[1],
+      tempSide[8], tempSide[5], tempSide[2]
+    ];
+    tempSide = newSide;
+  }
+
+  return newSide;
+}
