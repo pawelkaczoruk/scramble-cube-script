@@ -1,38 +1,53 @@
 function draw() {
   const canvas = document.getElementById('scrambled-cube'),
         cubeScheme = {
-          front: ['#FFFFFF', '#08EE10', '#08EE10',
-                  '#08EE10', '#08EE10', '#08EE10',
-                  '#08EE10', '#08EE10', '#08EE10'],
-          top: ['#FFFFFF', '#FFFFFF', '#FFFFFF',
-                '#FFFFFF', '#FFFFFF', '#FFFFFF',
-                '#FFFFFF', '#FFFFFF', '#FFFFFF'],
-          left: ['#F58A1F', '#F58A1F', '#F58A1F',
-                '#F58A1F', '#F58A1F', '#F58A1F',
-                '#F58A1F', '#F58A1F', '#F58A1F'],
-          right: ['#FF0000', '#FF0000', '#FF0000',
-                  '#FF0000', '#FF0000', '#FF0000',
-                  '#FF0000', '#FF0000', '#FF0000'],
-          back: ['#1900FF', '#1900FF', '#1900FF',
-                '#1900FF', '#1900FF', '#1900FF',
-                '#1900FF', '#1900FF', '#1900FF'],
-          bottom: ['#DCE90D', '#DCE90D', '#DCE90D',
-                  '#DCE90D', '#DCE90D', '#DCE90D',
-                  '#DCE90D', '#DCE90D', '#DCE90D']
-                };
-  const scramble = ["R2", "D", "B2", "D", "F2", "L2", "D'", "L2", "U", "R2", "B2", "F", "D", "L'", "B", "D2", "R", "F2", "U2"];
-  const scrambledCubeScheme = scrambleCube(scramble, cubeScheme);
+          front: [
+            '#FFFFFF', '#08EE10', '#08EE10',
+            '#08EE10', '#08EE10', '#08EE10',
+            '#08EE10', '#08EE10', '#08EE10'
+          ],
+          top: [
+            '#FFFFFF', '#FFFFFF', '#FFFFFF',
+            '#FFFFFF', '#FFFFFF', '#FFFFFF',
+            '#FFFFFF', '#FFFFFF', '#FFFFFF'
+          ],
+          left: [
+            '#F58A1F', '#F58A1F', '#F58A1F',
+            '#F58A1F', '#F58A1F', '#F58A1F',
+            '#F58A1F', '#F58A1F', '#F58A1F'
+          ],
+          right: [
+            '#FF0000', '#FF0000', '#FF0000',
+            '#FF0000', '#FF0000', '#FF0000',
+            '#FF0000', '#FF0000', '#FF0000'
+          ],
+          back: [
+            '#1900FF', '#1900FF', '#1900FF',
+            '#1900FF', '#1900FF', '#1900FF',
+            '#1900FF', '#1900FF', '#1900FF'
+          ],
+          bottom: [
+            '#DCE90D', '#DCE90D', '#DCE90D',
+            '#DCE90D', '#DCE90D', '#DCE90D',
+            '#DCE90D', '#DCE90D', '#DCE90D'
+          ]
+        },
+        scramble = ["F"],
+        scrambledCubeScheme = scrambleCube(scramble, cubeScheme);
 
-  // if browser supports canvas
+//         scramble = ["R2", "D", "B2", "D", "F2", "L2", "D'", "L2", "U", "R2", "B2", "F", "D", "L'", "B", "D2", "R", "F2", "U2"],
+
+
+        // if browser supports canvas
   if(canvas.getContext) {
     const ctx = canvas.getContext('2d');
 
-    displayOneCubeSide(99, 99, cubeScheme.front); // front
-    displayOneCubeSide(99, 0, cubeScheme.top); // top
-    displayOneCubeSide(0, 99, cubeScheme.left); // left
-    displayOneCubeSide(198, 99, cubeScheme.right); // right
-    displayOneCubeSide(297, 99, cubeScheme.back); // back
-    displayOneCubeSide(99, 198, cubeScheme.bottom); // bottom
+    displayOneCubeSide(99, 99, scrambledCubeScheme.front); // front
+    displayOneCubeSide(99, 0, scrambledCubeScheme.top); // top
+    displayOneCubeSide(0, 99, scrambledCubeScheme.left); // left
+    displayOneCubeSide(198, 99, scrambledCubeScheme.right); // right
+    displayOneCubeSide(297, 99, scrambledCubeScheme.back); // back
+    displayOneCubeSide(99, 198, scrambledCubeScheme.bottom); // bottom
 
 
     // x and y coordinates are top left corner of side of cube,
@@ -104,19 +119,29 @@ function draw() {
 }
 
 function scrambleCube(scramble, colorScheme) {
-  let scrambledCube = colorScheme;
+  let scrambledCube = {...colorScheme};
 
   for(let i=0; i<scramble.length; i++) {
-    const letterLength = scramble[i].length;
-    const move = scramble[i][0];
-    let modifier;
+    const letterLength = scramble[i].length,
+          move = scramble[i][0];
+    let modifier,
+        modSides;
 
     // for counter clockwise moves do 3x turn, for duble moves do 2x turn
     modifier = letterLength === 1 ? 1 : scramble[i][1] === '2' ? 2 : 3;
     
-    switch(scramble[i][0]) {
-      case 'F': scrambledCube.front = doFaceMove(scrambledCube.front, modifier);
-
+    switch(move) {
+      case 'F': modSides = {...doVerticalMove(scrambledCube.left, scrambledCube.top, 
+                              scrambledCube.right, scrambledCube.bottom, modifier)};
+  
+                scrambledCube = {
+                  front: doFaceMove(scrambledCube.front, modifier),
+                  top: modSides.top,
+                  left: modSides.left,
+                  right: modSides.right,
+                  back: scrambledCube.back,
+                  bottom: modSides.bottom
+                };
                 break;
       case 'U': scrambledCube.top = doFaceMove(scrambledCube.top, modifier);
                 break;
@@ -134,6 +159,7 @@ function scrambleCube(scramble, colorScheme) {
   return scrambledCube;
 }
 
+// do face move of selected cube side
 function doFaceMove(cubeSide, turns) {
   let newSide,
       tempSide = cubeSide;
@@ -148,4 +174,38 @@ function doFaceMove(cubeSide, turns) {
   }
 
   return newSide;
+}
+
+// move contigous side elements
+function doVerticalMove(sideLeft, sideTop, sideRight, sideBottom, turns) {
+  let tempSide1;
+
+  for(let i=0; i<turns; i++) {
+    tempSide1 = [...sideLeft];
+
+    sideLeft[2] = sideBottom[0];
+    sideLeft[5] = sideBottom[1];
+    sideLeft[8] = sideBottom[2];
+
+    sideBottom[0] = sideRight[6];
+    sideBottom[1] = sideRight[3];
+    sideBottom[2] = sideRight[0];
+
+    sideRight[0] = sideTop[6];
+    sideRight[3] = sideTop[7];
+    sideRight[6] = sideTop[8];
+
+    sideTop[6] = tempSide1[8];
+    sideTop[7] = tempSide1[5];
+    sideTop[8] = tempSide1[2];
+  }
+
+  
+
+  return {
+    top: sideTop,
+    left: sideLeft,
+    right: sideRight,
+    bottom: sideBottom
+  };
 }
