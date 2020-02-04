@@ -1,36 +1,50 @@
 function draw() {
   const canvas = document.getElementById('scrambled-cube'),
         cubeScheme = {
-          front: [{1: '#08EE10'}, {2: '#08EE10'}, {3: '#08EE10'},
-                  {4: '#08EE10'}, {5: '#08EE10'}, {6: '#08EE10'},
-                  {7: '#08EE10'}, {8: '#08EE10'}, {9: '#08EE10'}],
-          top: [{1: '#FFFFFF'}, {2: '#FFFFFF'}, {3: '#FFFFFF'},
-                {4: '#FFFFFF'}, {5: '#FFFFFF'}, {6: '#FFFFFF'},
-                {7: '#FFFFFF'}, {8: '#FFFFFF'}, {9: '#FFFFFF'}],
-          left: [{1: '#F58A1F'}, {2: '#F58A1F'}, {3: '#F58A1F'},
-                {4: '#F58A1F'}, {5: '#F58A1F'}, {6: '#F58A1F'},
-                {7: '#F58A1F'}, {8: '#F58A1F'}, {9: '#F58A1F'}],
-          right: [{1: '#FF0000'}, {2: '#FF0000'}, {3: '#FF0000'},
-                  {4: '#FF0000'}, {5: '#FF0000'}, {6: '#FF0000'},
-                  {7: '#FF0000'}, {8: '#FF0000'}, {9: '#FF0000'}],
-          back: [{1: '#1900FF'}, {2: '#1900FF'}, {3: '#1900FF'},
-                {4: '#1900FF'}, {5: '#1900FF'}, {6: '#1900FF'},
-                {7: '#1900FF'}, {8: '#1900FF'}, {9: '#1900FF'}],
-          bottom: [{1: '#DCE90D'}, {2: '#DCE90D'}, {3: '#DCE90D'},
-                  {4: '#DCE90D'}, {5: '#DCE90D'}, {6: '#DCE90D'},
-                  {7: '#DCE90D'}, {8: '#DCE90D'}, {9: '#DCE90D'}],};
+          front: [
+            '#08EE10', '#08EE10', '#08EE10',
+            '#08EE10', '#08EE10', '#08EE10',
+            '#08EE10', '#08EE10', '#08EE10'
+          ],
+          top: [
+            '#FFFFFF', '#FFFFFF', '#FFFFFF',
+            '#FFFFFF', '#FFFFFF', '#FFFFFF',
+            '#FFFFFF', '#FFFFFF', '#FFFFFF'
+          ],
+          left: [
+            '#F58A1F', '#F58A1F', '#F58A1F',
+            '#F58A1F', '#F58A1F', '#F58A1F',
+            '#F58A1F', '#F58A1F', '#F58A1F'
+          ],
+          right: [
+            '#FF0000', '#FF0000', '#FF0000',
+            '#FF0000', '#FF0000', '#FF0000',
+            '#FF0000', '#FF0000', '#FF0000'
+          ],
+          back: [
+            '#1900FF', '#1900FF', '#1900FF',
+            '#1900FF', '#1900FF', '#1900FF',
+            '#1900FF', '#1900FF', '#1900FF'
+          ],
+          bottom: [
+            '#DCE90D', '#DCE90D', '#DCE90D',
+            '#DCE90D', '#DCE90D', '#DCE90D',
+            '#DCE90D', '#DCE90D', '#DCE90D'
+          ]
+        },
+        scramble = ["R2", "D", "B2", "D", "F2", "L2", "D'", "L2", "U", "R2", "B2", "F", "D", "L'", "B", "D2", "R", "F2", "U2"],
+        scrambledCubeScheme = scrambleCube(scramble, cubeScheme);
 
-
-  // if browser supports canvas
+        // if browser supports canvas
   if(canvas.getContext) {
     const ctx = canvas.getContext('2d');
 
-    displayOneCubeSide(99, 99, cubeScheme.front); // front
-    displayOneCubeSide(99, 0, cubeScheme.top); // top
-    displayOneCubeSide(0, 99, cubeScheme.left); // left
-    displayOneCubeSide(198, 99, cubeScheme.right); // right
-    displayOneCubeSide(297, 99, cubeScheme.back); // back
-    displayOneCubeSide(99, 198, cubeScheme.bottom); // bottom
+    displayOneCubeSide(99, 99, scrambledCubeScheme.front); // front
+    displayOneCubeSide(99, 0, scrambledCubeScheme.top); // top
+    displayOneCubeSide(0, 99, scrambledCubeScheme.left); // left
+    displayOneCubeSide(198, 99, scrambledCubeScheme.right); // right
+    displayOneCubeSide(297, 99, scrambledCubeScheme.back); // back
+    displayOneCubeSide(99, 198, scrambledCubeScheme.bottom); // bottom
 
 
     // x and y coordinates are top left corner of side of cube,
@@ -46,7 +60,7 @@ function draw() {
       
       // calculate position of sticker and draw it
       for(let i=1; i<=9; i++) {
-        color = stickers[i-1][i];
+        color = stickers[i-1];
 
         switch(i) {
           case 1: xp = x; yp = y; break;
@@ -101,7 +115,229 @@ function draw() {
 
 }
 
+function scrambleCube(scramble, colorScheme) {
+  let scrambledCube = {...colorScheme};
 
+  for(let i=0; i<scramble.length; i++) {
+    const letterLength = scramble[i].length,
+          move = scramble[i][0];
+    let modifier,
+        modSides;
 
+    // for counter clockwise moves do 3x turn, for duble moves do 2x turn
+    modifier = letterLength === 1 ? 1 : scramble[i][1] === '2' ? 2 : 3;
+    
+    switch(move) {
+      case 'F': modSides = {...doVerticalMove(move, scrambledCube.left, scrambledCube.top, 
+                              scrambledCube.right, scrambledCube.bottom, modifier)};
+  
+                scrambledCube = {
+                  front: doFaceMove(scrambledCube.front, modifier),
+                  top: modSides.top,
+                  left: modSides.left,
+                  right: modSides.right,
+                  back: scrambledCube.back,
+                  bottom: modSides.bottom
+                };
+                break;
+      case 'U': modSides = {...doVerticalMove(move, scrambledCube.left, scrambledCube.back, 
+                              scrambledCube.right, scrambledCube.front, modifier)};
+  
+                scrambledCube = {
+                  front: modSides.bottom,
+                  top: doFaceMove(scrambledCube.top, modifier),
+                  left: modSides.left,
+                  right: modSides.right,
+                  back: modSides.top,
+                  bottom: scrambledCube.bottom
+                };
+                break;
+      case 'L': modSides = {...doVerticalMove(move, scrambledCube.back, scrambledCube.top, 
+                              scrambledCube.front, scrambledCube.bottom, modifier)};
+  
+                scrambledCube = {
+                  front: modSides.right,
+                  top: modSides.top,
+                  left: doFaceMove(scrambledCube.left, modifier),
+                  right: scrambledCube.right,
+                  back: modSides.left,
+                  bottom: modSides.bottom
+                };
+                break;
+      case 'R': modSides = {...doVerticalMove(move, scrambledCube.front, scrambledCube.top, 
+                              scrambledCube.back, scrambledCube.bottom, modifier)};
+  
+                scrambledCube = {
+                  front: modSides.left,
+                  top: modSides.top,
+                  left: scrambledCube.left,
+                  right: doFaceMove(scrambledCube.right, modifier),
+                  back: modSides.right,
+                  bottom: modSides.bottom
+                };
+                break;
+      case 'B': modSides = {...doVerticalMove(move, scrambledCube.right, scrambledCube.top, 
+                              scrambledCube.left, scrambledCube.bottom, modifier)};
+  
+                scrambledCube = {
+                  front: scrambledCube.front,
+                  top: modSides.top,
+                  left: modSides.right,
+                  right: modSides.left,
+                  back: doFaceMove(scrambledCube.back, modifier),
+                  bottom: modSides.bottom
+                };
+                break;
+      case 'D': modSides = {...doVerticalMove(move, scrambledCube.left, scrambledCube.front, 
+                              scrambledCube.right, scrambledCube.back, modifier)};
+  
+                scrambledCube = {
+                  front: modSides.top,
+                  top: scrambledCube.top,
+                  left: modSides.left,
+                  right: modSides.right,
+                  back: modSides.bottom,
+                  bottom: doFaceMove(scrambledCube.bottom, modifier)
+                };
+                break;
+    }
+  }
 
+  return scrambledCube;
+}
 
+// do face move of selected cube side
+function doFaceMove(cubeSide, turns) {
+  let newSide,
+      tempSide = cubeSide;
+
+  for(let i=0; i<turns; i++) {
+    newSide = [
+      tempSide[6], tempSide[3], tempSide[0],
+      tempSide[7], tempSide[4], tempSide[1],
+      tempSide[8], tempSide[5], tempSide[2]
+    ];
+    tempSide = newSide;
+  }
+
+  return newSide;
+}
+
+// move contigous side elements
+function doVerticalMove(side, sideLeft, sideTop, sideRight, sideBottom, turns) {
+  let tempSide1;
+
+  for(let i=0; i<turns; i++) {
+    tempSide1 = [...sideLeft];
+
+    if(side === 'F') {
+      sideLeft[2] = sideBottom[0];
+      sideLeft[5] = sideBottom[1];
+      sideLeft[8] = sideBottom[2];
+
+      sideBottom[0] = sideRight[6];
+      sideBottom[1] = sideRight[3];
+      sideBottom[2] = sideRight[0];
+
+      sideRight[0] = sideTop[6];
+      sideRight[3] = sideTop[7];
+      sideRight[6] = sideTop[8];
+
+      sideTop[6] = tempSide1[8];
+      sideTop[7] = tempSide1[5];
+      sideTop[8] = tempSide1[2];
+    } 
+    else if(side === 'U') {
+      sideLeft[0] = sideBottom[0];
+      sideLeft[1] = sideBottom[1];
+      sideLeft[2] = sideBottom[2];
+
+      sideBottom[0] = sideRight[0];
+      sideBottom[1] = sideRight[1];
+      sideBottom[2] = sideRight[2];
+
+      sideRight[0] = sideTop[0];
+      sideRight[1] = sideTop[1];
+      sideRight[2] = sideTop[2];
+
+      sideTop[0] = tempSide1[0];
+      sideTop[1] = tempSide1[1];
+      sideTop[2] = tempSide1[2];
+    }
+    else if(side === 'L') {
+      sideLeft[2] = sideBottom[6];
+      sideLeft[5] = sideBottom[3];
+      sideLeft[8] = sideBottom[0];
+
+      sideBottom[6] = sideRight[6];
+      sideBottom[3] = sideRight[3];
+      sideBottom[0] = sideRight[0];
+
+      sideRight[6] = sideTop[6];
+      sideRight[3] = sideTop[3];
+      sideRight[0] = sideTop[0];
+
+      sideTop[6] = tempSide1[2];
+      sideTop[3] = tempSide1[5];
+      sideTop[0] = tempSide1[8];
+    }
+    else if(side === 'R') {
+      sideLeft[2] = sideBottom[2];
+      sideLeft[5] = sideBottom[5];
+      sideLeft[8] = sideBottom[8];
+
+      sideBottom[2] = sideRight[6];
+      sideBottom[5] = sideRight[3];
+      sideBottom[8] = sideRight[0];
+
+      sideRight[6] = sideTop[2];
+      sideRight[3] = sideTop[5];
+      sideRight[0] = sideTop[8];
+
+      sideTop[2] = tempSide1[2];
+      sideTop[5] = tempSide1[5];
+      sideTop[8] = tempSide1[8];
+    }
+    else if(side === 'B') {
+      sideLeft[2] = sideBottom[8];
+      sideLeft[5] = sideBottom[7];
+      sideLeft[8] = sideBottom[6];
+
+      sideBottom[8] = sideRight[6];
+      sideBottom[7] = sideRight[3];
+      sideBottom[6] = sideRight[0];
+
+      sideRight[6] = sideTop[0];
+      sideRight[3] = sideTop[1];
+      sideRight[0] = sideTop[2];
+
+      sideTop[0] = tempSide1[2];
+      sideTop[1] = tempSide1[5];
+      sideTop[2] = tempSide1[8];
+    }
+    else if(side === 'D') {
+      sideLeft[8] = sideBottom[8];
+      sideLeft[7] = sideBottom[7];
+      sideLeft[6] = sideBottom[6];
+
+      sideBottom[8] = sideRight[8];
+      sideBottom[7] = sideRight[7];
+      sideBottom[6] = sideRight[6];
+
+      sideRight[8] = sideTop[8];
+      sideRight[7] = sideTop[7];
+      sideRight[6] = sideTop[6];
+
+      sideTop[8] = tempSide1[8];
+      sideTop[7] = tempSide1[7];
+      sideTop[6] = tempSide1[6];
+    }
+  }
+
+  return {
+    top: sideTop,
+    left: sideLeft,
+    right: sideRight,
+    bottom: sideBottom
+  };
+}
