@@ -6,7 +6,7 @@ Script for displaying properly scrambled cube from input scramble algorithm. Wor
 Click [here](https://codepen.io/pawelkaczoruk/pen/KKpPJpV) to see example code and test it.
 
 ## 2. How to use:
-* Only proper moves are reognized, other moves are ommited
+* Only proper moves are recognized, other moves are ommited
 * Enter proper move: 
   * F - front layer
   * U - top layer
