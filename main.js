@@ -1,3 +1,19 @@
+let scramble = [];
+const input = document.getElementById('scramble-alg');
+
+input.addEventListener('input', (e) => {
+  scramble = e.target.value.toUpperCase().trim().split(' ');
+  draw();
+});
+
+function clearScramble() {
+  event.preventDefault();
+
+  input.value = '';
+  scramble = [];
+  draw();
+}
+
 function draw() {
   const canvas = document.getElementById('scrambled-cube'),
         cubeScheme = {
@@ -32,12 +48,14 @@ function draw() {
             '#DCE90D', '#DCE90D', '#DCE90D'
           ]
         },
-        scramble = ["R2", "D", "B2", "D", "F2", "L2", "D'", "L2", "U", "R2", "B2", "F", "D", "L'", "B", "D2", "R", "F2", "U2"],
         scrambledCubeScheme = scrambleCube(scramble, cubeScheme);
 
         // if browser supports canvas
   if(canvas.getContext) {
     const ctx = canvas.getContext('2d');
+
+    // clear before redrawing
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     displayOneCubeSide(99, 99, scrambledCubeScheme.front); // front
     displayOneCubeSide(99, 0, scrambledCubeScheme.top); // top
@@ -125,81 +143,83 @@ function scrambleCube(scramble, colorScheme) {
         modSides;
 
     // for counter clockwise moves do 3x turn, for duble moves do 2x turn
-    modifier = letterLength === 1 ? 1 : scramble[i][1] === '2' ? 2 : 3;
+    modifier = letterLength === 1 ? 1 : scramble[i][1] === '2' ? 2 : scramble[i][1] === '\'' ? 3 : 0;
     
-    switch(move) {
-      case 'F': modSides = {...doVerticalMove(move, scrambledCube.left, scrambledCube.top, 
-                              scrambledCube.right, scrambledCube.bottom, modifier)};
-  
-                scrambledCube = {
-                  front: doFaceMove(scrambledCube.front, modifier),
-                  top: modSides.top,
-                  left: modSides.left,
-                  right: modSides.right,
-                  back: scrambledCube.back,
-                  bottom: modSides.bottom
-                };
-                break;
-      case 'U': modSides = {...doVerticalMove(move, scrambledCube.left, scrambledCube.back, 
-                              scrambledCube.right, scrambledCube.front, modifier)};
-  
-                scrambledCube = {
-                  front: modSides.bottom,
-                  top: doFaceMove(scrambledCube.top, modifier),
-                  left: modSides.left,
-                  right: modSides.right,
-                  back: modSides.top,
-                  bottom: scrambledCube.bottom
-                };
-                break;
-      case 'L': modSides = {...doVerticalMove(move, scrambledCube.back, scrambledCube.top, 
-                              scrambledCube.front, scrambledCube.bottom, modifier)};
-  
-                scrambledCube = {
-                  front: modSides.right,
-                  top: modSides.top,
-                  left: doFaceMove(scrambledCube.left, modifier),
-                  right: scrambledCube.right,
-                  back: modSides.left,
-                  bottom: modSides.bottom
-                };
-                break;
-      case 'R': modSides = {...doVerticalMove(move, scrambledCube.front, scrambledCube.top, 
-                              scrambledCube.back, scrambledCube.bottom, modifier)};
-  
-                scrambledCube = {
-                  front: modSides.left,
-                  top: modSides.top,
-                  left: scrambledCube.left,
-                  right: doFaceMove(scrambledCube.right, modifier),
-                  back: modSides.right,
-                  bottom: modSides.bottom
-                };
-                break;
-      case 'B': modSides = {...doVerticalMove(move, scrambledCube.right, scrambledCube.top, 
-                              scrambledCube.left, scrambledCube.bottom, modifier)};
-  
-                scrambledCube = {
-                  front: scrambledCube.front,
-                  top: modSides.top,
-                  left: modSides.right,
-                  right: modSides.left,
-                  back: doFaceMove(scrambledCube.back, modifier),
-                  bottom: modSides.bottom
-                };
-                break;
-      case 'D': modSides = {...doVerticalMove(move, scrambledCube.left, scrambledCube.front, 
-                              scrambledCube.right, scrambledCube.back, modifier)};
-  
-                scrambledCube = {
-                  front: modSides.top,
-                  top: scrambledCube.top,
-                  left: modSides.left,
-                  right: modSides.right,
-                  back: modSides.bottom,
-                  bottom: doFaceMove(scrambledCube.bottom, modifier)
-                };
-                break;
+    if(modifier != 0) {
+      switch(move) {
+        case 'F': modSides = {...doVerticalMove(move, scrambledCube.left, scrambledCube.top, 
+                                scrambledCube.right, scrambledCube.bottom, modifier)};
+    
+                  scrambledCube = {
+                    front: doFaceMove(scrambledCube.front, modifier),
+                    top: modSides.top,
+                    left: modSides.left,
+                    right: modSides.right,
+                    back: scrambledCube.back,
+                    bottom: modSides.bottom
+                  };
+                  break;
+        case 'U': modSides = {...doVerticalMove(move, scrambledCube.left, scrambledCube.back, 
+                                scrambledCube.right, scrambledCube.front, modifier)};
+    
+                  scrambledCube = {
+                    front: modSides.bottom,
+                    top: doFaceMove(scrambledCube.top, modifier),
+                    left: modSides.left,
+                    right: modSides.right,
+                    back: modSides.top,
+                    bottom: scrambledCube.bottom
+                  };
+                  break;
+        case 'L': modSides = {...doVerticalMove(move, scrambledCube.back, scrambledCube.top, 
+                                scrambledCube.front, scrambledCube.bottom, modifier)};
+    
+                  scrambledCube = {
+                    front: modSides.right,
+                    top: modSides.top,
+                    left: doFaceMove(scrambledCube.left, modifier),
+                    right: scrambledCube.right,
+                    back: modSides.left,
+                    bottom: modSides.bottom
+                  };
+                  break;
+        case 'R': modSides = {...doVerticalMove(move, scrambledCube.front, scrambledCube.top, 
+                                scrambledCube.back, scrambledCube.bottom, modifier)};
+    
+                  scrambledCube = {
+                    front: modSides.left,
+                    top: modSides.top,
+                    left: scrambledCube.left,
+                    right: doFaceMove(scrambledCube.right, modifier),
+                    back: modSides.right,
+                    bottom: modSides.bottom
+                  };
+                  break;
+        case 'B': modSides = {...doVerticalMove(move, scrambledCube.right, scrambledCube.top, 
+                                scrambledCube.left, scrambledCube.bottom, modifier)};
+    
+                  scrambledCube = {
+                    front: scrambledCube.front,
+                    top: modSides.top,
+                    left: modSides.right,
+                    right: modSides.left,
+                    back: doFaceMove(scrambledCube.back, modifier),
+                    bottom: modSides.bottom
+                  };
+                  break;
+        case 'D': modSides = {...doVerticalMove(move, scrambledCube.left, scrambledCube.front, 
+                                scrambledCube.right, scrambledCube.back, modifier)};
+    
+                  scrambledCube = {
+                    front: modSides.top,
+                    top: scrambledCube.top,
+                    left: modSides.left,
+                    right: modSides.right,
+                    back: modSides.bottom,
+                    bottom: doFaceMove(scrambledCube.bottom, modifier)
+                  };
+                  break;
+      }
     }
   }
 

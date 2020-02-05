@@ -1,11 +1,55 @@
+@import url("https://fonts.googleapis.com/css?family=Roboto&display=swap");
 * {
   -webkit-box-sizing: border-box;
           box-sizing: border-box;
   padding: 0;
   margin: 0;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 600;
+}
+
+body {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
 }
 
 #scrambled-cube {
-  border: 2px solid black;
+  border: 2px solid rgba(0, 0, 0, 0.322);
+}
+
+form {
+  min-height: 4em;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  text-align: center;
+}
+
+form p {
+  margin-bottom: 1em;
+  color: #6f6f6f;
+}
+
+form label {
+  font-size: 1.3em;
+  margin-right: 0.6em;
+}
+
+#scramble-alg {
+  font-size: 1.3em;
+  font-weight: 400;
+}
+
+#clear-btn {
+  height: 29px;
+  font-size: 1em;
+  padding: 5px 15px;
 }
 /*# sourceMappingURL=style.css.map */

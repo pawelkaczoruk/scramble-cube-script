@@ -8,6 +8,14 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body onload="draw()">
+
+  <form>
+    <p>Enter scramble algorithm, separate each move with space e.g. F2 L B' D2</p>
+    <label for="scramble-alg">Algorithm:</label>
+    <input type="text" id="scramble-alg">
+    <button id="clear-btn" onclick="clearScramble()">reset</button>
+  </form>
+
   <canvas width="396" height="297" id="scrambled-cube"></canvas>
 
   <script src="main.js"></script>
